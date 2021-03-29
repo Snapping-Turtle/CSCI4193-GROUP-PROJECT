@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Other Resources - VaxiPro</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			<!-- Header -->
+			<header id="header">
+				<h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
+						<li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
+						<li id="userProfileMenu">
+							<a href="#" class="icon fa-user-circle"></a>
+							<ul>
+								<li><a href="#">Profile</a></li>
+								<li><a href="javascript:logoutUser()">Logout</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+			</header>
+			<!-- Main -->
+            <div id="main" class="wrapper style1">
+                <div class="container">
+                    <header class="major">
+                        <h2>Other Resources</h2>
+                        <p>Information and resources on vaccination for your institution and the area around you.</p>
+                    </header>
+                    <div class="row gtr-150">
+                        <div class="col-4 col-12-medium">
+                            <!-- Sidebar -->
+                            <section id="sidebar">
+                            </section>
+                        </div>
+                        <div class="col-8 col-12-medium imp-medium">
+                            <!-- Content -->
+                            <section id="content">
+                                <a id="institution-image-anch" href="#" class="image fit"><img id="institution-image" src="images/pic05.jpg" alt="" /></a>
+                                <h3 id="institution-title"></h3>
+                                <ul id="institution-info"></ul>
+                                <footer>
+                                    <ul class="actions">
+                                        <li><a id="institution-link" href="" target="_blank" class="button">Learn More<i class="fas fa-external-link-alt" style="padding-left: 10px;"></i></a></li>                                    </ul>
+                                </footer>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<!-- Footer -->
+            <footer id="footer">
+                <ul class="icons">
+                    <li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                    <li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </footer>
+		</div>
+		<!-- Scripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/jquery.scrolly.min.js"></script>
+        <script src="assets/js/jquery.dropotron.min.js"></script>
+        <script src="assets/js/jquery.scrollex.min.js"></script>
+        <script src="assets/js/browser.min.js"></script>
+        <script src="assets/js/breakpoints.min.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
+        <script src="assets/js/firebaseSetup.js"></script>
+		<script src="assets/js/authUtil.js"></script>
+        <script>
+            firebase.auth().onAuthStateChanged(user => {
+                let itemsToHideWhenNotLoggedIn = ["userProfileMenu", "otherResourcesButton"]
+                let itemsToHideWhenLoggedIn = ["signInButton"]
+                if (user) {
+                    showItems(itemsToHideWhenNotLoggedIn)
+                    hideItems(itemsToHideWhenLoggedIn)
+                    getRelevantResource(firebase.auth().currentUser.email)
+                } else {
+                    showItems(itemsToHideWhenLoggedIn)
+                    hideItems(itemsToHideWhenNotLoggedIn)
+                }
+            })
+
+            function getRelevantResource(userEmail) {
+                // Get Institution
+                let db = firebase.firestore()
+
+                db.collection("users").doc(userEmail).get().then((doc) => {
+                    if (doc.exists) {
+                        let institution = doc.data().institution
+
+                        // Get documents for each near institution
+                        db.collection("institutions").doc(institution).get().then((instDoc) => {
+                            if (instDoc.exists) {
+                                let data = instDoc.data()
+
+                                db.collection("resources").doc(data.region).get().then((resource) => {
+                                    if (resource.exists) {
+                                        let data = resource.data()
+                                        createSection(data.image, data.title, data.text, data.link)
+                                    }
+                                })
+                                db.collection("resources").doc(data.country).get().then((resource) => {
+                                    if (resource.exists) {
+                                        let data = resource.data()
+                                        createSection(data.image, data.title, data.text, data.link)
+                                    }
+                                })
+                                db.collection("resources").doc(institution).get().then((resource) => {
+                                    if (resource.exists) {
+                                        let data = resource.data()
+                                        let image = document.getElementById("institution-image")
+                                        image.src = data.image
+                                        image.alt = data.title
+                                        document.getElementById("institution-image-anch").href = data.link
+                                        document.getElementById("institution-link").href = data.link
+                                        document.getElementById("institution-title").innerHTML = data.title
+                                        let list = document.getElementById("institution-info")
+                                        for (let text of data.text) {
+                                            let bullet = document.createElement("LI")
+                                            bullet.appendChild(document.createTextNode(text))
+                                            list.appendChild(bullet)
+                                        }
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+
+
+            }
+
+            function createSection(img, title, text, link) {
+                let section = document.createElement("SECTION")
+
+                // Append image to section
+                let image = document.createElement("IMG")
+                image.src = img
+                image.alt = title
+                let imageAnchor = document.createElement("A")
+                imageAnchor.classList.add("image")
+                imageAnchor.classList.add("fit")
+                imageAnchor.appendChild(image)
+                section.appendChild(imageAnchor)
+
+                // Append title to section
+                let heading = document.createElement("H3")
+                heading.appendChild(document.createTextNode(title))
+                section.appendChild(heading)
+
+                // Append text to section
+                let paragraph = document.createElement("P")
+                paragraph.appendChild(document.createTextNode(text))
+                section.appendChild(paragraph)
+
+                // Append button link to section
+                let footer = document.createElement("FOOTER")
+                let list = document.createElement("UL")
+                list.classList.add("actions")
+
+                let listEl = document.createElement("LI")
+                
+                let buttonAnchor = document.createElement("A")
+                buttonAnchor.href = link
+                buttonAnchor.target = "_blank"
+                buttonAnchor.classList.add("button")
+                buttonAnchor.appendChild(document.createTextNode("Learn More"))
+
+                let buttonIcon = document.createElement("I")
+                buttonIcon.classList.add("fas")
+                buttonIcon.classList.add("fa-external-link-alt")
+                buttonIcon.style.paddingLeft = "10px"
+                buttonAnchor.appendChild(buttonIcon)
+
+                listEl.appendChild(buttonAnchor)
+                list.appendChild(listEl)
+                footer.appendChild(list)
+                section.appendChild(footer)
+
+                section.appendChild(document.createElement("HR"))
+                // Append Section to document
+                document.getElementById("sidebar").appendChild(section)
+            }
+        </script>
+	</body>
+</html>

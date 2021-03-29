@@ -43,10 +43,8 @@
 											<input type="email" name="email" id="email" value="" placeholder="Email" />
 										</div>
 										<div class="col-12">
-											<select name="institution" id="institution">
+											<select name="institution" id="institutionsSelect">
 												<option value="">- Institution -</option>
-												<option value="dalhousieUniversity">Dalhousie University</option>
-												<option value="saintMarysUniversity">Saint Marys University</option>
 											</select>
 										</div>
 										<div class="col-12">
@@ -108,12 +106,20 @@
 		<script src="assets/js/firebaseSetup.js"></script>
 
 		<script>
+			let db = firebase.firestore()
+			db.collection("institutions").get().then((querySnapshot) => {
+				console.log(querySnapshot)
+				querySnapshot.forEach((doc) => {
+					addOptionToSelect("institutionsSelect", camelCaseToRegular(doc.id), doc.id)
+				});
+			})
+
 			signUpForm.onsubmit = async (e) => {
 				e.preventDefault();
 				let firstName = document.getElementById("firstname").value
 				let lastName = document.getElementById("lastname").value
 				let email = document.getElementById("email").value
-				let institution = document.getElementById("institution").value
+				let institution = document.getElementById("institutionsSelect").value
 				let password = document.getElementById("password").value
 				
 				firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -142,6 +148,18 @@
 				} else { 
 					document.getElementById('password').setCustomValidity('');
 				}
+			}
+			
+			function camelCaseToRegular(string) {
+				return string.replace(/([A-Z])/g, ' $1').replace(/^./, function(str){ return str.toUpperCase(); })
+			}
+
+			function addOptionToSelect(selectId, title, value) {
+				var opt = document.createElement('option');
+				opt.value = value;
+				opt.innerHTML = title;
+				select = document.getElementById(selectId);
+				select.appendChild(opt);
 			}
 		</script>
 	</body>
