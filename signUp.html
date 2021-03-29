@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Sign Up - VaxiPro</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			<!-- Header -->
+			<header id="header">
+				<h1 id="logo"><a href="index.html">Landed</a></h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li>
+							<a href="#">Layouts</a>
+							<ul>
+								<li><a href="left-sidebar.html">Left Sidebar</a></li>
+								<li><a href="right-sidebar.html">Right Sidebar</a></li>
+								<li><a href="no-sidebar.html">No Sidebar</a></li>
+								<li>
+									<a href="#">Submenu</a>
+									<ul>
+										<li><a href="#">Option 1</a></li>
+										<li><a href="#">Option 2</a></li>
+										<li><a href="#">Option 3</a></li>
+										<li><a href="#">Option 4</a></li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li><a href="elements.html">Elements</a></li>
+						<li><a href="signIn.html" class="button primary">Sign In</a></li>
+					</ul>
+				</nav>
+			</header>
+			<!-- Main -->
+			<div id="main" class="wrapper style1">
+				<div class="container">
+					<div class="row gtr-150">
+						<div class="col-4 col-12-medium">
+							<!-- Sidebar -->
+								<section id="sidebar">
+									<form id="signUpForm" method="post">
+										<div class="row gtr-uniform gtr-50">
+											<div class="col-12">
+												<input type="text" name="firstname" id="firstname" value="" placeholder="First Name" />
+											</div>
+											<div class="col-12">
+												<input type="text" name="lastname" id="lastname" value="" placeholder="Last Name" />
+											</div>
+											<div class="col-12">
+												<input type="email" name="email" id="email" value="" placeholder="Email" />
+											</div>
+											<div class="col-12">
+												<select name="institution" id="institution">
+													<option value="">- Institution -</option>
+													<option value="dalhousieUniversity">Dalhousie University</option>
+													<option value="saintMarysUniversity">Saint Marys University</option>
+												</select>
+											</div>
+											<div class="col-12">
+												<input type="password" name="password" id="password" value="" placeholder="Password" oninput="checkPassword()"/>
+											</div>
+											<div class="col-12">
+												<input type="password" name="password" id="password_confirm" value="" placeholder="Password (Confirm)" oninput="checkPassword()"/>
+											</div>
+											<div class="col-12">
+												<ul class="actions">
+													<li><input type="submit" value="Sign Up" class="primary" /></li>
+												</ul>
+												<a href="signIn.html">Already have an account?</a>
+											</div>
+										</div>
+									</form>
+								</section>
+						</div>
+						<div class="col-8 col-12-medium imp-medium">
+							<!-- Content -->
+							<section id="content">
+								<a href="#" class="image fit"><img src="images/pic05.jpg" alt="" /></a>
+								<h3>See the VaxiPro platform in action</h2>
+								<p>Discover more about how VaxiPro is being used to engage and encourage organizations around the world with the vaccination process.</p>
+							</section>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+					<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+					<li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+					<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+					<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				</ul>
+			</footer>
+		</div>
+		<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/jquery.scrolly.min.js"></script>
+		<script src="assets/js/jquery.dropotron.min.js"></script>
+		<script src="assets/js/jquery.scrollex.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+
+		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
+		<script src="assets/js/firebaseSetup.js"></script>
+
+		<script>
+			signUpForm.onsubmit = async (e) => {
+				e.preventDefault();
+				let firstName = document.getElementById("firstname").value
+				let lastName = document.getElementById("lastname").value
+				let email = document.getElementById("email").value
+				let institution = document.getElementById("institution").value
+				let password = document.getElementById("password").value
+				
+				firebase.auth().createUserWithEmailAndPassword(email, password)
+				.then((userCredential) => {
+					let user = firebase.auth().currentUser
+					let db = firebase.firestore()
+					db.collection("users").doc(user.email).set({
+						firstName,
+						lastName,
+						institution,
+					}).then(() => {
+						window.location.href="index.html";
+					})
+				})
+			};
+		</script>
+		<script>
+			function checkPassword() {
+				// Password must be atleast 6 characters in length
+				if (document.getElementById('password').value.length < 6) {
+					document.getElementById('password').setCustomValidity('Password Must be Atleast 6 Characters.');
+				// Passwords must match
+				} else if (document.getElementById('password_confirm').value != document.getElementById('password').value) {
+					document.getElementById('password').setCustomValidity('Password Must be Matching.');
+				// Set input back to valid
+				} else { 
+					document.getElementById('password').setCustomValidity('');
+				}
+			}
+		</script>
+	</body>
+</html>
