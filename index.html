@@ -15,24 +15,25 @@
 	<body class="is-preload landing">
 		<div id="page-wrapper">
 			<!-- Header -->
-			<header id="header">
-				<h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
-				<nav id="nav">
-					<ul>
-						<li><a href="index.html">Home</a></li>
+            <header id="header">
+                <h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li id="infographics"><a href="infographics.html">Infographics</a></li>
+                        <li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
 						<li><a href="aboutUs.html">About Us</a></li>
-						<li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
-						<li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
-						<li id="userProfileMenu">
-							<a href="#" class="icon fa-user-circle"></a>
-							<ul>
-								<li><a href="#">Profile</a></li>
-								<li><a href="javascript:logoutUser()">Logout</a></li>
-							</ul>
-						</li>
-					</ul>
-				</nav>
-			</header>
+                        <li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
+                        <li id="userProfileMenu">
+                            <a href="#" class="icon fa-user-circle"></a>
+                            <ul>
+                                <li><a href="#">Profile</a></li>
+                                <li><a href="javascript:logoutUser()">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
 			<!-- Banner -->
 			<section id="banner">
 				<div class="content">
@@ -135,18 +136,5 @@
 		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
 		<script src="assets/js/firebaseSetup.js"></script>
 		<script src="assets/js/authUtil.js"></script>
-		<script>
-			firebase.auth().onAuthStateChanged(user => {
-				let itemsToHideWhenNotLoggedIn = ["userProfileMenu", "otherResourcesButton"]
-				let itemsToHideWhenLoggedIn = ["signUpButton", "signInButton"]
-                if (user) {
-                    showItems(itemsToHideWhenNotLoggedIn)
-                    hideItems(itemsToHideWhenLoggedIn)
-                } else {
-                    showItems(itemsToHideWhenLoggedIn)
-                    hideItems(itemsToHideWhenNotLoggedIn)
-                }
-            })
-		</script>
 	</body>
 </html>
