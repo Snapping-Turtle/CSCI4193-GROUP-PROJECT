@@ -15,23 +15,25 @@
 	<body class="is-preload">
 		<div id="page-wrapper">
 			<!-- Header -->
-			<header id="header">
-				<h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
-				<nav id="nav">
-					<ul>
-						<li><a href="index.html">Home</a></li>
-						<li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
-						<li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
-						<li id="userProfileMenu">
-							<a href="#" class="icon fa-user-circle"></a>
-							<ul>
-								<li><a href="#">Profile</a></li>
-								<li><a href="javascript:logoutUser()">Logout</a></li>
-							</ul>
-						</li>
-					</ul>
-				</nav>
-			</header>
+            <header id="header">
+                <h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li id="infographics"><a href="infographics.html">Infographics</a></li>
+                        <li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
+                        <li><a href="aboutUs.html">About Us</a></li>
+                        <li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
+                        <li id="userProfileMenu">
+                            <a href="#" class="icon fa-user-circle"></a>
+                            <ul>
+                                <li><a href="#">Profile</a></li>
+                                <li><a href="javascript:logoutUser()">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
 			<!-- Main -->
             <div id="main" class="wrapper style1">
                 <div class="container">
@@ -92,44 +94,42 @@
         <script src="assets/js/firebaseSetup.js"></script>
 		<script src="assets/js/authUtil.js"></script>
         <script>
+            // Update information on page to be relevant to the user
             firebase.auth().onAuthStateChanged(user => {
-                let itemsToHideWhenNotLoggedIn = ["userProfileMenu", "otherResourcesButton"]
-                let itemsToHideWhenLoggedIn = ["signInButton"]
                 if (user) {
-                    showItems(itemsToHideWhenNotLoggedIn)
-                    hideItems(itemsToHideWhenLoggedIn)
                     getRelevantResource(firebase.auth().currentUser.email)
-                } else {
-                    showItems(itemsToHideWhenLoggedIn)
-                    hideItems(itemsToHideWhenNotLoggedIn)
                 }
             })
 
+            // Get all resources related to the user. That is information from the institution, region, country.
             function getRelevantResource(userEmail) {
-                // Get Institution
                 let db = firebase.firestore()
 
+                // Get information about the institution for the user
                 db.collection("users").doc(userEmail).get().then((doc) => {
                     if (doc.exists) {
                         let institution = doc.data().institution
 
-                        // Get documents for each near institution
+                        // Get information on the institution and where it is
                         db.collection("institutions").doc(institution).get().then((instDoc) => {
                             if (instDoc.exists) {
                                 let data = instDoc.data()
-
+                                
+                                // Get information for the region
                                 db.collection("resources").doc(data.region).get().then((resource) => {
                                     if (resource.exists) {
                                         let data = resource.data()
                                         createSection(data.image, data.title, data.text, data.link)
                                     }
                                 })
+                                // Get information for the country
                                 db.collection("resources").doc(data.country).get().then((resource) => {
                                     if (resource.exists) {
                                         let data = resource.data()
                                         createSection(data.image, data.title, data.text, data.link)
                                     }
                                 })
+                                // Get information for the institution
                                 db.collection("resources").doc(institution).get().then((resource) => {
                                     if (resource.exists) {
                                         let data = resource.data()
@@ -151,10 +151,9 @@
                         })
                     }
                 })
-
-
             }
 
+            // Create a section on the left sidebar with information from a specific resource
             function createSection(img, title, text, link) {
                 let section = document.createElement("SECTION")
 

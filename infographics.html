@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Infographics - VaxiPro</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			<!-- Header -->
+            <header id="header">
+                <h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li id="infographics"><a href="infographics.html">Infographics</a></li>
+                        <li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
+                        <li><a href="aboutUs.html">About Us</a></li>
+                        <li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
+                        <li id="userProfileMenu">
+                            <a href="#" class="icon fa-user-circle"></a>
+                            <ul>
+                                <li><a href="#">Profile</a></li>
+                                <li><a href="javascript:logoutUser()">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+			<!-- Main -->
+            <div id="main" class="wrapper style1">
+                <div class="container">
+                    <header class="major">
+                        <h2>Infographics</h2>
+                        <p>View infographics related to vaccination around your institution.</p>
+                    </header>
+                    <div class="row gtr-150">
+                        <div class="col-4 col-12-medium">
+                            <!-- Sidebar -->
+                            <section id="sidebar">
+                                <h3>Quick Access</h3>
+                                <hr style="margin-top: 1rem;margin-bottom: 1rem;">
+                                <a href="#one">COVID-19 Vaccine Doses Administered</a>
+                                <hr style="margin-top: 1rem;margin-bottom: 1rem;">
+                                <a href="#two">Share Of Population Fully Vaccinated Against Covid</a>
+                                <hr style="margin-top: 1rem;margin-bottom: 1rem;">
+                                <a href="#three">COVID-19 Vaccination Policy</a>
+                            </section>
+                        </div>
+                        <div class="col-8 col-12-medium imp-medium">
+                            <!-- Content -->
+                            <section id="content">
+                                <h3 id="one">COVID-19 Vaccine Doses Administered</h3>
+                                <iframe id="covidDoses" src="" loading="lazy" style="width: 100%; height: 600px; border: 0px none;"></iframe>
+                                <h3 id="two">Share Of Population Fully Vaccinated Against Covid</h3>
+                                <iframe id="shareFullyVaccinated" src="" loading="lazy" style="width: 100%; height: 600px; border: 0px none;"></iframe>
+                                <h3 id="three">COVID-19 Vaccination Policy</h3>
+                                <iframe id="vaccinationPolicy" src="" loading="lazy" style="width: 100%; height: 600px; border: 0px none;"></iframe>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<!-- Footer -->
+            <footer id="footer">
+                <ul class="icons">
+                    <li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+                    <li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                    <li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+                </ul>
+                <ul class="copyright">
+                    <li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </footer>
+		</div>
+		<!-- Scripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/jquery.scrolly.min.js"></script>
+        <script src="assets/js/jquery.dropotron.min.js"></script>
+        <script src="assets/js/jquery.scrollex.min.js"></script>
+        <script src="assets/js/browser.min.js"></script>
+        <script src="assets/js/breakpoints.min.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
+        <script src="assets/js/firebaseSetup.js"></script>
+		<script src="assets/js/authUtil.js"></script>
+        <script>
+            // Update information on page to be relevant to the user
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    getInfographicDataForUser(firebase.auth().currentUser.email)
+                }
+            })
+
+            // Get country and continent to show for the infographics
+            function getInfographicDataForUser(userEmail) {
+                let db = firebase.firestore()
+
+                // Get information about the institution for the user
+                db.collection("users").doc(userEmail).get().then((doc) => {
+                    if (doc.exists) {
+                        let institution = doc.data().institution
+
+                        // Get information on the institution and where it is
+                        db.collection("institutions").doc(institution).get().then((instDoc) => {
+                            if (instDoc.exists) {
+                                let data = instDoc.data()
+                                document.getElementById("covidDoses").src = `https://ourworldindata.org/explorers/coronavirus-data-explorer?zoomToSelection=true&time=346..latest&pickerSort=desc&pickerMetric=population&Metric=Vaccinations&Interval=Cumulative&Relative+to+Population=true&Align+outbreaks=false&country=${data.countryCode}&hideControls=true`
+                                document.getElementById("shareFullyVaccinated").src = `https://ourworldindata.org/grapher/share-people-fully-vaccinated-covid?tab=map&time=latest&region=${data.continent}`
+                                document.getElementById("vaccinationPolicy").src = `https://ourworldindata.org/grapher/covid-vaccination-policy?region=${data.continent}`
+                            }
+                        })
+                    }
+                })
+            }
+        </script>
+	</body>
+</html>
