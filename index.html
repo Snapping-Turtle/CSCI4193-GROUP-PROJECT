@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Landed by HTML5 UP</title>
+		<title>VaxiPro</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -20,6 +20,7 @@
 				<nav id="nav">
 					<ul>
 						<li><a href="index.html">Home</a></li>
+						<li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
 						<li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
 						<li id="userProfileMenu">
 							<a href="#" class="icon fa-user-circle"></a>
@@ -132,32 +133,19 @@
 		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
 		<script src="assets/js/firebaseSetup.js"></script>
-
+		<script src="assets/js/authUtil.js"></script>
 		<script>
 			firebase.auth().onAuthStateChanged(user => {
-				let itemsToHideWhenNotLoggedIn = ["userProfileMenu"]
+				let itemsToHideWhenNotLoggedIn = ["userProfileMenu", "otherResourcesButton"]
 				let itemsToHideWhenLoggedIn = ["signUpButton", "signInButton"]
-				if (user) {
-					for (let itemToShow of itemsToHideWhenNotLoggedIn) {
-						document.getElementById(itemToShow).style.display = "inline-block";
-					}
-					for (let itemToHide of itemsToHideWhenLoggedIn) {
-						document.getElementById(itemToHide).style.display = "none"
-					}
-				} else {
-					for (let itemToHide of itemsToHideWhenNotLoggedIn) {
-						document.getElementById(itemToHide).style.display = "none";
-					}
-					for (let itemToShow of itemsToHideWhenLoggedIn) {
-						document.getElementById(itemToShow).style.display = "inline-block"
-					}
-				}
-			})
-		</script>
-		<script>
-			function logoutUser() {
-				firebase.auth().signOut()
-			}
+                if (user) {
+                    showItems(itemsToHideWhenNotLoggedIn)
+                    hideItems(itemsToHideWhenLoggedIn)
+                } else {
+                    showItems(itemsToHideWhenLoggedIn)
+                    hideItems(itemsToHideWhenNotLoggedIn)
+                }
+            })
 		</script>
 	</body>
 </html>
