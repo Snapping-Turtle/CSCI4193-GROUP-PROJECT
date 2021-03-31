@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/jquery.scrolly.min.js"></script>
+<script src="assets/js/jquery.dropotron.min.js"></script>
+<script src="assets/js/jquery.scrollex.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
+<script src="assets/js/firebaseSetup.js"></script>
+
+
+</style>
+<script>
+	// Update information on page to be relevant to the user
+	firebase.auth().onAuthStateChanged(user => {
+		if (user) {
+			getLocationDataForUser(firebase.auth().currentUser.email)
+			
+		}
+	})
+	
+	// Get country and continent to show for the infographics
+	function getLocationDataForUser(userEmail) {
+		let db = firebase.firestore()
+
+		// Get information about the institution for the user
+		db.collection("users").doc(userEmail).get().then((doc) => {
+			if (doc.exists) {
+				let institution = doc.data().institution
+				
+				db.collection("institutions").doc(institution).get().then((instDoc) => {
+					if (instDoc.exists) {
+						let location = instDoc.data().city
+						
+						// Get information on the institution and where it is
+						db.collection("locations").doc(location).get().then((locDoc) => {
+						if (locDoc.exists) {
+							let map = locDoc.data()
+							document.getElementById("locations").src = map.locations
+							document.getElementById("bookingLink").href = map.book
+							document.getElementById("fillerText").textContent= map.fillerText;
+					}
+				})
+
+					}
+				})
+
+
+				
+			}
+		})
+	}
+</script>
+	
+<html>
+	<head>
+		<title>Right Sidebar - Landed by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			<!-- Header -->
+			<header id="header">
+				<h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="aboutUs.html">About Us</a></li>
+						<li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
+						<li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
+						<li id="userProfileMenu">
+							<a href="#" class="icon fa-user-circle"></a>
+							<ul>
+								<li><a href="#">Profile</a></li>
+								<li><a href="javascript:logoutUser()">Logout</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+			</header>
+
+			<!-- Main -->
+				<div id="main" class="wrapper style1">
+					<div class="container">
+						<header class="major">
+							<h2>Vaccination Locations</h2>
+							
+						</header>
+						<div class="row gtr-150">
+							<div class="col-8 col-12-medium">
+
+								<!-- Content -->
+									<section id="content">
+						
+										<iframe id="locations" src="" loading="lazy" style="width: 100%; height: 600px; border: 0px none;"></iframe>
+										
+										<h3>Use the Map above to find the nearest Location</h3>
+										<p id="fillerText"></p>
+										
+									</section>
+
+							</div>
+							<div class="col-4 col-12-medium">
+
+								<!-- Sidebar -->
+									<section id="sidebar">
+										<section>
+											<h3>Book a Vaccine Now</h3>
+											<footer>
+												<ul class="actions">
+													<li><a id="bookingLink" href="" class="button">Schedule Appointment</a></li>
+												</ul>
+											</footer>
+										</section>
+										<hr />
+										
+									</section>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</footer>
+
+		</div>
+	</body>
+</html>
