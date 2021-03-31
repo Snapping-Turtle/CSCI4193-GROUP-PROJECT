@@ -27,7 +27,7 @@ function hideItems(itemsToHide) {
 // Setup listener for firebase authentication state change. Hide information if the user
 // is not logged in and show certain information if they are logged in.
 firebase.auth().onAuthStateChanged(user => {
-    let itemsToHideWhenNotLoggedIn = ["userProfileMenu", "otherResourcesButton", "infographics"]
+    let itemsToHideWhenNotLoggedIn = ["mapPage", "userProfileMenu", "otherResourcesButton", "infographics"]
     let itemsToHideWhenLoggedIn = ["signUpButton", "signInButton"]
     if (user) {
         showItems(itemsToHideWhenNotLoggedIn)
