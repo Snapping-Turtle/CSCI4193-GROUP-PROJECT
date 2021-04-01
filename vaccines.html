@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Vaccines - VaxiPro</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			<!-- Header -->
+            <header id="header">
+                <h1 id="logo"><a href="index.html"><img src="images/logo.png" style="height: 70%;vertical-align: middle;"></a></h1>
+                <nav id="nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+						<li id="mapPage"><a href="mapPage.html">Find Location</a></li>
+						<li id="vaccines"><a href="vaccines.html">Vaccines</a></li>
+                        <li id="infographics"><a href="infographics.html">Infographics</a></li>
+                        <li id="otherResourcesButton"><a href="otherResources.html">Other Resources</a></li>
+						<li><a href="aboutUs.html">About Us</a></li>
+                        <li id="signInButton"><a href="signIn.html" class="button primary">Sign In</a></li>
+                        <li id="userProfileMenu">
+                            <a href="#" class="icon fa-user-circle"></a>
+                            <ul>
+                                <li><a href="javascript:logoutUser()">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+			<!-- Main -->
+            <div id="main" class="wrapper style1">
+                <div class="container">
+                    <header class="major">
+                        <h2>Vaccines</h2>
+                        <p>Currently approved and available vaccines in your area.</p>
+                    </header>
+                    <div class="row gtr-150">
+                        <div class="col-4 col-12-medium">
+                            <!-- Sidebar -->
+                            <section id="sidebar">
+                                <h3>Vaccines</h3>
+                                <hr style="margin-top: 1rem;margin-bottom: 1rem;">
+                            </section>
+                        </div>
+                        <div class="col-8 col-12-medium imp-medium">
+                            <!-- Content -->
+                            <section id="content">
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<!-- Footer -->
+            <footer id="footer">
+                <ul class="copyright">
+                    <li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </footer>
+		</div>
+		<!-- Scripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/jquery.scrolly.min.js"></script>
+        <script src="assets/js/jquery.dropotron.min.js"></script>
+        <script src="assets/js/jquery.scrollex.min.js"></script>
+        <script src="assets/js/browser.min.js"></script>
+        <script src="assets/js/breakpoints.min.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script> 
+        <script src="assets/js/firebaseSetup.js"></script>
+		<script src="assets/js/authUtil.js"></script>
+        <script>
+            // Update information on page to be relevant to the user
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    getVaccinesForUser(firebase.auth().currentUser.email)
+                }
+            })
+
+            // Get all vaccine information related to the user.
+            function getVaccinesForUser(userEmail) {
+                let db = firebase.firestore()
+
+                // Get information about the institution for the user
+                db.collection("users").doc(userEmail).get().then((doc) => {
+                    if (doc.exists) {
+                        let institution = doc.data().institution
+
+                        db.collection("institutions").doc(institution).get().then((instDoc) => {
+                            if (instDoc.exists) {
+                                let data = instDoc.data()
+                                
+                                // Get information on approved vaccines
+                                db.collection("approvedVaccines").doc(data.country).get().then((approvedVaccinesResource) => {
+                                    if (approvedVaccinesResource.exists) {
+                                        let data = approvedVaccinesResource.data()
+                                        let approvedVaccines = data.vaccines
+                                        
+                                        // Get information on each vaccine
+                                        for (let vaccine of approvedVaccines) {
+                                            db.collection("vaccines").doc(vaccine).get().then((vaccineResource) => {
+                                                if (vaccineResource.exists) {
+                                                    let vaccineData = vaccineResource.data()
+                                                    createSidebarLink(vaccineData.name)
+                                                    createVaccineInformation(vaccineData)
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+            
+            // Create link on sidebar to section for specific vaccine
+            function createSidebarLink(vaccineName) {
+                let horRule = document.createElement("HR")
+                horRule.style.marginTop = "1rem"
+                horRule.style.marginBottom = "1rem"
+                let vaccineAnchor = document.createElement("A")
+                vaccineAnchor.href = `#${vaccineName}`
+                vaccineAnchor.innerHTML = vaccineName
+                document.getElementById("sidebar").appendChild(vaccineAnchor)
+                document.getElementById("sidebar").appendChild(horRule)                
+            }
+
+            // Create infoblock for all information on a specific vaccine
+            function createVaccineInformation(vaccineInfo) {
+                let content = document.getElementById("content")
+
+                let vaccineSection = document.createElement("SECTION")
+                vaccineSection.id = vaccineInfo.name
+
+                let title = document.createElement("H2")
+                title.innerHTML = vaccineInfo.name
+                vaccineSection.appendChild(title)
+
+                let approvedAgesSection = createApprovedAgesSection(vaccineInfo.approvedAges)
+                vaccineSection.appendChild(approvedAgesSection)
+
+                let methodGivenSection = createMethodGivenSection(vaccineInfo.howItsGiven)
+                vaccineSection.appendChild(methodGivenSection)
+
+                let sideEffectSection = createSideEffectSection(vaccineInfo.sideEffects)
+                vaccineSection.appendChild(sideEffectSection)
+
+                let ingredientsSection = createIngredientsSection(vaccineInfo.ingredients)
+                vaccineSection.appendChild(ingredientsSection)
+
+                let relatedLinksSection = createRelatedLinksSection(vaccineInfo.relatedLinks)
+                vaccineSection.appendChild(relatedLinksSection)
+
+                let horRule = document.createElement("HR")
+                horRule.style.marginTop = "1rem"
+                horRule.style.marginBottom = "1rem"
+                vaccineSection.appendChild(horRule)
+
+                content.appendChild(vaccineSection)
+            }
+
+            // Create vaccine approved ages section
+            function createApprovedAgesSection(approvedAges) {
+                let section = document.createElement("SECTION")
+                let title = document.createElement("H3")
+                title.innerHTML = "Approved Ages"
+                let text = document.createElement("P")
+                text.innerHTML = approvedAges
+                section.appendChild(title)
+                section.appendChild(text)
+                return section
+            }
+
+            // Create section for how vaccine is given
+            function createMethodGivenSection(methodGiven) {
+                let section = document.createElement("SECTION")
+                let title = document.createElement("H3")
+                title.innerHTML = "Method Given"
+                let text = document.createElement("P")
+                text.innerHTML = methodGiven
+                section.appendChild(title)
+                section.appendChild(text)
+                return section
+            }
+
+            // Create related links section
+            function createRelatedLinksSection(relatedLinks) {
+                let section = document.createElement("SECTION")
+                let title = document.createElement("H3")
+                title.innerHTML = "Related Links"
+                section.appendChild(title)
+
+                for (let linkInfo of relatedLinks) {
+                    let anchor = document.createElement("A")
+                    anchor.href = linkInfo.link
+                    anchor.innerHTML = linkInfo.name
+                    section.appendChild(anchor)
+                }
+                return section
+            }
+
+            // Create Side Effects section
+            function createSideEffectSection(sideEffects) {
+                let section = document.createElement("SECTION")
+                let sideEffectsTitle = document.createElement("H3")
+                sideEffectsTitle.innerHTML = "Side Effects"
+                section.appendChild(sideEffectsTitle)
+
+                let sideEffectsList = document.createElement("UL")
+                for (let sideEffect of sideEffects) {
+                    let item = document.createElement("LI")
+                    item.innerHTML = sideEffect
+                    sideEffectsList.appendChild(item)
+                }
+                section.appendChild(sideEffectsList)
+                return section
+            }
+            
+            // Create vaccine ingredient information list
+            function createIngredientsSection(vaccineIngredients) {
+                // Add title for ingredients section
+                let ingredSection = document.createElement("SECTION")
+                let ingredTitle = document.createElement("H3")
+                ingredTitle.innerHTML = "Ingredients"
+                ingredSection.appendChild(ingredTitle)
+
+                // Add medical ingredients
+                let medicalTitle = document.createElement("H4")
+                medicalTitle.innerHTML = "Medical"
+                ingredSection.appendChild(medicalTitle)
+
+                let medicalList = document.createElement("UL")
+                for (let ingredient of vaccineIngredients.medical) {
+                    let item = document.createElement("LI")
+                    item.innerHTML = ingredient
+                    medicalList.appendChild(item)
+                }
+                ingredSection.appendChild(medicalList)
+
+                // Add non medical ingedients
+                let nonMedicalTitle = document.createElement("H4")
+                nonMedicalTitle.innerHTML = "Non Medical"
+                ingredSection.appendChild(nonMedicalTitle)
+
+                let nonMedicalList = document.createElement("UL")
+                for (let ingredient of vaccineIngredients.nonMedical) {
+                    let item = document.createElement("LI")
+                    item.innerHTML = ingredient
+                    nonMedicalList.appendChild(item)
+                }
+                ingredSection.appendChild(nonMedicalList)
+
+                return ingredSection
+            }
+        </script>
+	</body>
+</html>
